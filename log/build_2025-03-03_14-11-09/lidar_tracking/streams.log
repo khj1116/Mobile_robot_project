@@ -1,0 +1,31 @@
+[1.098s] Invoking command in '/home/addinedu/ros2_ws/src/lidar_tracking': PYTHONPATH=/home/addinedu/ros2_ws/build/lidar_tracking/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lidar_tracking build --build-base /home/addinedu/ros2_ws/build/lidar_tracking/build install --record /home/addinedu/ros2_ws/build/lidar_tracking/install.log --single-version-externally-managed install_data
+[1.384s] running egg_info
+[1.385s] writing ../../build/lidar_tracking/lidar_tracking.egg-info/PKG-INFO
+[1.385s] writing dependency_links to ../../build/lidar_tracking/lidar_tracking.egg-info/dependency_links.txt
+[1.385s] writing entry points to ../../build/lidar_tracking/lidar_tracking.egg-info/entry_points.txt
+[1.385s] writing requirements to ../../build/lidar_tracking/lidar_tracking.egg-info/requires.txt
+[1.386s] writing top-level names to ../../build/lidar_tracking/lidar_tracking.egg-info/top_level.txt
+[1.388s] reading manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[1.389s] writing manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[1.389s] running build
+[1.389s] running build_py
+[1.389s] copying lidar_tracking/lidar_following.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[1.390s] running install
+[1.390s] running install_lib
+[1.390s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_following.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[1.391s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_following.py to lidar_following.cpython-310.pyc
+[1.394s] running install_data
+[1.394s] running install_egg_info
+[1.395s] removing '/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking-0.0.0-py3.10.egg-info' (and everything under it)
+[1.396s] Copying ../../build/lidar_tracking/lidar_tracking.egg-info to /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking-0.0.0-py3.10.egg-info
+[1.397s] running install_scripts
+[1.418s] Installing cluster_test script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.418s] Installing following_test script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.418s] Installing lidar_clustering script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.419s] Installing lidar_distance script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.419s] Installing lidar_following script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.419s] Installing lidar_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.419s] Installing lidar_visualization script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.419s] Installing utils script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[1.420s] writing list of installed files to '/home/addinedu/ros2_ws/build/lidar_tracking/install.log'
+[1.451s] Invoked command in '/home/addinedu/ros2_ws/src/lidar_tracking' returned '0': PYTHONPATH=/home/addinedu/ros2_ws/build/lidar_tracking/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lidar_tracking build --build-base /home/addinedu/ros2_ws/build/lidar_tracking/build install --record /home/addinedu/ros2_ws/build/lidar_tracking/install.log --single-version-externally-managed install_data

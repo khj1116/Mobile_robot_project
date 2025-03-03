@@ -1,4 +1,5 @@
 [console_scripts]
+cluster_test = lidar_tracking.cluster_test:main
 following_test = lidar_tracking.following_test:main
 lidar_clustering = lidar_tracking.lidar_clustering:main
 lidar_distance = lidar_tracking.lidar_distance:main
