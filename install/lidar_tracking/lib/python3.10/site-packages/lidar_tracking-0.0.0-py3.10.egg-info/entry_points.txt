@@ -1,0 +1,9 @@
+[console_scripts]
+following_test = lidar_tracking.following_test:main
+lidar_clustering = lidar_tracking.lidar_clustering:main
+lidar_distance = lidar_tracking.lidar_distance:main
+lidar_following = lidar_tracking.lidar_following:main
+lidar_tracking = lidar_tracking.lidar_tracking:main
+lidar_visualization = lidar_tracking.lidar_visualization:main
+utils = lidar_tracking.utils:main
+
