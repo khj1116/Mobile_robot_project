@@ -54,7 +54,6 @@ class LidarPersonTracking(Node):
                                                   [0, 1, 0, 0]], dtype=np.float32)
         self.kalman.processNoiseCov = np.eye(4, dtype=np.float32) * 0.01
         self.kalman.measurementNoiseCov = np.eye(2, dtype=np.float32) * 0.1
-        self.kalman.statePost = np.zeros((4,1), dtype=np.float32)  #초기 상태 설정
 
         # ✅ Kalman Filter 초기화 (속도 조절용)
         self.kalman_speed = cv2.KalmanFilter(2, 1)
@@ -127,7 +126,6 @@ class LidarPersonTracking(Node):
             cluster_points = points[labels == label]
             cluster_center = np.mean(cluster_points, axis=0)
             cluster_spread = np.max(np.linalg.norm(cluster_points - cluster_center, axis=1))
-            #침대 필터링
             if 0.05 < cluster_spread < 0.15 and 5 < len(cluster_points) < 15:  # 장애물 필터링 강화
                 cluster_centers.append(cluster_center)
 
@@ -149,7 +147,7 @@ class LidarPersonTracking(Node):
                     if min_leg_distance < dist < max_leg_distance:
                         pair_center = np.mean([cluster_centers[i], cluster_centers[j]], axis=0)
                         pair_dist = np.linalg.norm(pair_center - predicted_pos)
-                        if pair_dist < min_distance and pair_dist < 0.8: #거리 임계값 강화
+                        if pair_dist < min_distance and pair_dist < 0.8:  #거리 임계값 강화
                             min_distance = pair_dist
                             best_pair = (cluster_centers[i], cluster_centers[j])
         else:
@@ -171,29 +169,23 @@ class LidarPersonTracking(Node):
         if self.target_position is None:
             self.positions.append(new_position)  # 초기 데이터 누적
             return True
-        
 
-
-        # 침대 구간에서 튐 방지 : 속도와 거리 기반 강화
+        # ✅ 속도 차이 비교 (요구사항 #2)
         dist_to_predicted = np.linalg.norm(new_position - predicted_position)
-        if dist_to_predicted > 0.8:  # 거리 임계값으로 튐 방지
+        if dist_to_predicted > 0.8:  # 거리 임계값으로 튐 방지(1.0)
             return False
         
         # 속도 차이 비교
         dt = time.time() - self.last_seen_time + 1e-5
         new_velocity = np.linalg.norm(new_position - self.target_position) / dt
         velocity_diff = abs(new_velocity - self.prev_velocity)
-        if velocity_diff > 0.5 or new_velocity < 0.01:  #고정 객체(침대) 제외
+        if velocity_diff > 0.5 or new_velocity < 0.01: #고정 객체 제외
             return False
 
         # ✅ KNN 활용 (요구사항 #1)
         if self.knn_fit:
             predicted_label = self.knn.predict([new_position])
             return predicted_label[0] == 0  # 기존 사람과 일치하면 True
-        
-        if self.knn_fit:
-            predicted_label = self.knn.predict([new_position])
-            return predicted_label[0] == 0
 
         # KNN 학습
         self.positions.append(new_position)
@@ -242,7 +234,7 @@ class LidarPersonTracking(Node):
             cmd.angular.z = 0.0
         else:
             linear_speed = min(0.3, 0.17 * filtered_speed)
-            angular_speed = -0.6 * angle_to_target #0.6
+            angular_speed = -0.5 * angle_to_target #0.6
             smoothed_linear_speed = self.velocity_smoothing_factor * linear_speed + (1 - self.velocity_smoothing_factor) * self.last_velocity_x
             cmd.linear.x = float(smoothed_linear_speed)
             smoothed_angular_speed = self.velocity_smoothing_factor * angular_speed + (1 - self.velocity_smoothing_factor) * self.last_velocity_z

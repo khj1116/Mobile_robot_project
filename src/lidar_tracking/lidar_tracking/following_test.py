@@ -3,6 +3,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from visualization_msgs.msg import Marker, MarkerArray
+from std_msgs.msg import String
 import numpy as np
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 from sklearn.cluster import DBSCAN
@@ -18,23 +19,30 @@ class LidarPersonTracking(Node):
         # ✅ QoS 설정
         qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
 
-        # ✅ LiDAR 센서 데이터 구독 (항상 활성화)
-        self.subscription = self.create_subscription(
-            LaserScan, '/scan', self.lidar_callback, qos_profile)
+        # ✅ 음성 명령 구독
+        self.command_subscriber = self.create_subscription(String, '/tracking_command', self.command_callback, 10)
 
-        # ✅ 타이머 초기화 (항상 활성화)
-        self.timer = self.create_timer(0.01, self.timer_callback)
 
+        #ROS2 퍼블리셔(cmd_vel, marker)
+        # ✅ 이동 명령 퍼블리셔 (cmd_vel)
         # ✅ 이동 명령 퍼블리셔 (cmd_vel)
         self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
 
         # ✅ 마커 퍼블리셔 (Rviz에서 시각화)
         self.marker_publisher = self.create_publisher(MarkerArray, '/cluster_markers', 10)
 
+
+        # ✅ LiDAR 센서 데이터 구독 (추적이 시작될 때 활성화)
+        self.subscription = None
+
         # 초기화 변수
+        self.tracking_enabled = False  #기본적으로 Tracking 기능 OFF
         self.target_position = None
         self.last_seen_time = time.time()
         self.prev_velocity = 0.0
+
+
+        # :작은_파란색_다이아몬드: 속도 완충용 변수 추가
         self.last_velocity_x = 0.0
         self.last_velocity_z = 0.0
         self.velocity_smoothing_factor = 0.5  # 속도 변화 완충 계수
@@ -62,8 +70,42 @@ class LidarPersonTracking(Node):
         self.kalman_speed.processNoiseCov = np.eye(2, dtype=np.float32) * 0.02
         self.kalman_speed.measurementNoiseCov = np.eye(1, dtype=np.float32) * 0.3
 
+    def command_callback(self, msg):
+        """음성 명령을 받아 Tracking 기능 on/off"""
+        if msg.data == "start":
+            if not self.tracking_enabled:
+                self.start_tracking()
+            elif msg.data == "stop":
+                if self.tracking_enabled:
+                    self.stop_tracking()
+    
+    def start_tracking(self):
+        """트래킹 기능 시작(라이다 데이터 구독 활성화시키기)"""
+        self.get_logger().info("Object Tracking Start")
+        self.tracking_enabled = True
+        qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
+
+        #라이다 데이터 구독 활성화
+        self.subscription = self.create_subscription(
+            LaserScan, '/scan', self.lidar_callback, qos_profile)
+        self.timer=self.create_timer(0.01,self.timer_callback)
+
+    def stop_tracking(self):
+        """트래킹 기능 중지"""
+        self.get_logger().info("Object Tracking Stop")
+        self.tracking_enabled = False
+        self.subscription = None  #라이다 데이터 구독 비활성화
+        self.target_position = None  #추적 대상 초기화
+    
+    
+    
+    
+    
     def lidar_callback(self, msg):
         """LiDAR 데이터를 2D 좌표로 변환 후 사람의 다리를 인식하여 추적"""
+        if not self.tracking_enabled:
+            return
+        
         angles = np.linspace(msg.angle_min, msg.angle_max, len(msg.ranges))
         ranges = np.array(msg.ranges)
 
@@ -126,7 +168,7 @@ class LidarPersonTracking(Node):
             cluster_points = points[labels == label]
             cluster_center = np.mean(cluster_points, axis=0)
             cluster_spread = np.max(np.linalg.norm(cluster_points - cluster_center, axis=1))
-            if 0.05 < cluster_spread < 0.2 and 5 < len(cluster_points) < 20:  # 장애물 필터링 강화
+            if 0.05 < cluster_spread < 0.15 and 5 < len(cluster_points) < 15:  # 장애물 필터링 강화
                 cluster_centers.append(cluster_center)
 
         if len(cluster_centers) < 2:
@@ -147,7 +189,7 @@ class LidarPersonTracking(Node):
                     if min_leg_distance < dist < max_leg_distance:
                         pair_center = np.mean([cluster_centers[i], cluster_centers[j]], axis=0)
                         pair_dist = np.linalg.norm(pair_center - predicted_pos)
-                        if pair_dist < min_distance:
+                        if pair_dist < min_distance and pair_dist < 0.8:  #거리 임계값 강화
                             min_distance = pair_dist
                             best_pair = (cluster_centers[i], cluster_centers[j])
         else:
@@ -172,14 +214,14 @@ class LidarPersonTracking(Node):
 
         # ✅ 속도 차이 비교 (요구사항 #2)
         dist_to_predicted = np.linalg.norm(new_position - predicted_position)
-        if dist_to_predicted > 1.0:  # 거리 임계값으로 튐 방지
+        if dist_to_predicted > 0.8:  # 거리 임계값으로 튐 방지(1.0)
             return False
         
         # 속도 차이 비교
         dt = time.time() - self.last_seen_time + 1e-5
         new_velocity = np.linalg.norm(new_position - self.target_position) / dt
         velocity_diff = abs(new_velocity - self.prev_velocity)
-        if velocity_diff > 0.5:
+        if velocity_diff > 0.5 or new_velocity < 0.01: #고정 객체 제외
             return False
 
         # ✅ KNN 활용 (요구사항 #1)
@@ -229,19 +271,26 @@ class LidarPersonTracking(Node):
         filtered_speed = self.kalman_speed.predict()[0][0]
         angle_to_target = np.arctan2(target_y, target_x)
 
+
+        #비상 정지 (너무 가까우면 멈춤)
         if distance < 0.3:
             cmd.linear.x = 0.0
             cmd.angular.z = 0.0
         else:
+            #PID 제어 적용하여 속도 조절
             linear_speed = min(0.3, 0.17 * filtered_speed)
             angular_speed = -0.5 * angle_to_target #0.6
+            #부드러운 속도 조절 적용
             smoothed_linear_speed = self.velocity_smoothing_factor * linear_speed + (1 - self.velocity_smoothing_factor) * self.last_velocity_x
             cmd.linear.x = float(smoothed_linear_speed)
+            
             smoothed_angular_speed = self.velocity_smoothing_factor * angular_speed + (1 - self.velocity_smoothing_factor) * self.last_velocity_z
             cmd.angular.z = float(smoothed_angular_speed)
+            
+            #마지막 속도 저장
             self.last_velocity_x = cmd.linear.x
             self.last_velocity_z = cmd.angular.z
-        self.cmd_vel_publisher.publish(cmd)
+            self.cmd_vel_publisher.publish(cmd)
 
     def create_cluster_markers(self, person_position):
         """클러스터별 마커 생성 (Rviz 시각화)"""
