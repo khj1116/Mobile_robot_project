@@ -89,35 +89,32 @@ class LidarPersonTracking(Node):
             return
 
         # ✅ DBSCAN 클러스터링 수행
-        clustering = DBSCAN(eps=0.2, min_samples=5).fit(points)
+        clustering = DBSCAN(eps=0.1, min_samples=6).fit(points)
         labels = clustering.labels_
 
         # ✅ 사람의 다리 쌍을 인식하여 정확한 사람 추종
         person_position = self.detect_person_legs(points, labels)
-        self.get_logger().info(f"Detected person position: {person_position}")
 
         if person_position is not None:
             # if self.is_valid_person(person_position):
                 self.update_kalman(person_position)
                 self.target_position = self.get_kalman_prediction()
                 self.last_seen_time = time.time()
-                self.get_logger().info(f"Target position updated: {self.target_position}")
         else:
             # ✅ 일정 시간 동안 추적 대상이 없어도 예측값 유지
             if time.time() - self.last_seen_time < 3.0:
                 if self.target_position is not None:
-                   self.target_position = self.apply_kalman_filter(self.target_position)
-                   self.get_logger().info(f"Target position predicted: {self.target_position}")
+                    self.target_position = self.apply_kalman_filter(self.target_position)
             else:
                 self.target_position = None
-                self.get_logger().info("Target position reset to None")
 
+        # ✅ 이동 명령 생성
         
+
        # ✅ MarkerArray 생성 (Rviz 시각화)
         cluster_markers = self.create_cluster_markers(self.target_position)##########
         self.marker_publisher.publish(cluster_markers)
 
-    # ✅ 이동 명령 생성
     def timer_callback(self):
         self.move_robot()
 
@@ -132,15 +129,8 @@ class LidarPersonTracking(Node):
             if label == -1:  # 노이즈 제거
                 continue
             cluster_points = points[labels == label]
-            cluster_diameter = self.calculate_cluster_diameter(cluster_points)
-            self.get_logger().info(f"Cluster diameter: {cluster_diameter}")
-            if not (0.15 <= cluster_diameter <= 0.4):  # 직경 필터링
-                self.get_logger().info("Cluster rejected: Diameter out of range")
-                continue
-            if self.is_semicircle(cluster_points):  # Hough Transform으로 반원 확인
-                cluster_center = np.mean(cluster_points, axis=0)
-                cluster_centers.append(cluster_center)
-                self.get_logger().info(f"Cluster center added: {cluster_center}")
+            cluster_center = np.mean(cluster_points, axis=0)
+            cluster_centers.append(cluster_center)
 
         # ✅ 다리 쌍 찾기 (두 개의 클러스터가 0.2m ~ 0.5m 거리이면 사람으로 인식)
         min_leg_distance = 0.2
@@ -154,81 +144,38 @@ class LidarPersonTracking(Node):
                 if min_leg_distance < dist < max_leg_distance and dist < min_distance:
                     min_distance = dist
                     best_pair = (cluster_centers[i], cluster_centers[j])
-                    self.get_logger().info(f"Best pair found: {best_pair}, Distance: {min_distance}")
 
         if best_pair:
-            result = np.mean(best_pair, axis=0)
-            self.get_logger().info(f"Person position: {result}")
-            return result
-        self.get_logger().info("No leg pair detected")
+            # ✅ 다리 두 개의 중심을 사람 위치로 설정
+            return np.mean(best_pair, axis=0)
+        
         return None
-    
-    def calculate_cluster_diameter(self, points):
-        if len(points) < 2:
-            return 0.0
-        distances = np.linalg.norm(points[:, np.newaxis] - points, axis=2)
-        return np.max(distances)
-
-    def is_semicircle(self, points):
-        """ Hough Transform을 사용하여 반원 형태 확인 """
-        scale = 200  # 미터 단위를 픽셀로 변환
-        img_size = 500
-        img = np.zeros((img_size, img_size), dtype=np.uint8)
-        offset = img_size // 2
-
-        for point in points:
-            x, y = int(point[0] * scale + offset), int(point[1] * scale + offset)
-            if 0 <= x < img_size and 0 <= y < img_size:
-                img[y, x] = 255
-
-        # Hough Circle Transform 적용
-        circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, dp=1, minDist=20,
-                                   param1=20, param2=3, minRadius=5, maxRadius=60)
-        if circles is not None:
-            valid_circles = []
-            for circle in circles[0, :]:
-                radius_m = circle[2] / scale
-                self.get_logger().info(f"Circle radius (m): {radius_m}")
-                if 0.05 <= radius_m <= 0.25:  # 사람 다리 반지름 범위
-                    valid_circles.append(circle)
-            if valid_circles:
-                self.get_logger().info(f"Circles detected: {len(valid_circles)}")
-                return True
-            self.get_logger().info("No valid circles after filtering")
-            return False
-        self.get_logger().info("No circles detected")
-        return False
     
 
 
     def is_valid_person(self, new_position):
         """ KNN을 활용하여 기존 사람과 새로운 사람 비교 후 유효성 검사 """
         if self.target_position is None:
-            self.knn.fit([new_position], [0])
-            self.knn_fit = True
-            self.prev_velocity = 0.0
-            self.get_logger().info("Initial target set")
-            return True
 
-        # 속도 차이 비교
-        dt = time.time() - self.last_seen_time + 1e-5
-        new_velocity = np.linalg.norm(new_position - self.target_position) / dt
+            return True # 처음에는 무조건 추적
+        
+
+        # ✅ 속도 차이 비교 (새로운 사람인지 검증)
+        new_velocity = np.linalg.norm(new_position - self.target_position) / (time.time() - self.last_seen_time + 1e-5)
         velocity_diff = abs(new_velocity - self.prev_velocity)
-        self.get_logger().info(f"New velocity: {new_velocity}, Velocity diff: {velocity_diff}")
-        if velocity_diff > 0.5:  # 요청사항 #2
-            self.get_logger().info("Rejected: Velocity difference too large")
-            return False
-        self.prev_velocity = new_velocity
 
-        # KNN으로 기존 사람과 비교 (요청사항 #1)
+        if velocity_diff > 0.5:  # ✅ 속도 차이가 너무 크면 무시
+            return False
+
+        # ✅ KNN을 활용하여 기존 사람과 비교
         if self.knn_fit:
             predicted_label = self.knn.predict([new_position])
-            if predicted_label[0] != 0:
-                self.get_logger().info("Rejected: Not the same person (KNN)")
-                return False
+            return predicted_label[0] == 0  # 기존 사람과 일치하면 True 반환
 
-        # KNN 학습 업데이트
-        self.knn.fit(np.vstack([self.knn._fit_X, new_position]), np.append(self.knn._y, 0))
+        # ✅ KNN 학습 (처음에는 바로 적용하지 않고 3번 이상 학습 후 사용)
+        self.knn.fit([self.target_position], [0])
+        self.knn_fit = True
+
         return True
 
     def update_kalman(self, measurement):
@@ -273,7 +220,7 @@ class LidarPersonTracking(Node):
         filtered_speed = self.kalman_speed.predict()[0][0]
         angle_to_target = np.arctan2(target_y, target_x)
 
-        self.get_logger().info(f"Distance: {distance}, Angle: {angle_to_target}")
+
         # ✅ 비상 정지 (너무 가까우면 멈춤)
         if distance < 0.3:
             cmd.linear.x = 0.0  
