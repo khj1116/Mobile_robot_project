@@ -75,9 +75,12 @@ class LidarPersonTracking(Node):
         if msg.data == "start":
             if not self.tracking_enabled:
                 self.start_tracking()
-            elif msg.data == "stop":
-                if self.tracking_enabled:
-                    self.stop_tracking()
+        elif msg.data == "stop":
+            if self.tracking_enabled:
+                self.stop_tracking()
+        else:
+            self.stop_tracking()
+
     
     def start_tracking(self):
         """트래킹 기능 시작(라이다 데이터 구독 활성화시키기)"""
@@ -96,9 +99,6 @@ class LidarPersonTracking(Node):
         self.tracking_enabled = False
         self.subscription = None  #라이다 데이터 구독 비활성화
         self.target_position = None  #추적 대상 초기화
-    
-    
-    
     
     
     def lidar_callback(self, msg):
