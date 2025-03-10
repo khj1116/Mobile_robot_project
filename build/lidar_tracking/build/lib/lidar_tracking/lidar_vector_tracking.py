@@ -15,12 +15,16 @@ class LidarPersonTracking(Node):
     def __init__(self):
         super().__init__('lidar_person_tracking')
         qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
-
+        
+        #ROS2 퍼블리셔
         self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
         self.marker_publisher = self.create_publisher(MarkerArray, '/cluster_markers', 10)
+        
+        #LIDAR 센서 데이터 구독
         self.subscription = self.create_subscription(LaserScan, '/scan', self.lidar_callback, qos_profile)
         self.timer = self.create_timer(0.01, self.timer_callback)
 
+        # 초기화 변수
         self.target_position = None
         self.last_seen_time = time.time()
         self.prev_velocity = 0.0
@@ -28,12 +32,14 @@ class LidarPersonTracking(Node):
         self.last_velocity_z = 0.0
         self.velocity_smoothing_factor = 0.5
         self.positions = []
-        self.position_history = deque(maxlen=10)
+        self.position_history = deque(maxlen=20)  #히스토리 길이 증가
         self.velocity_vector = None  # 속도 벡터 저장
+        self.target_stopped = False  #타겟 정지 여부
 
-        self.knn = KNeighborsClassifier(n_neighbors=1)
+        self.knn = KNeighborsClassifier(n_neighbors=3)  #더 엄격한 분류를 위해 증가
         self.knn_fit = False
 
+        # 칼만 필터 설정 (위치)
         self.kalman = cv2.KalmanFilter(4, 2)
         self.kalman.transitionMatrix = np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]], dtype=np.float32)
         self.kalman.measurementMatrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.float32)
@@ -41,6 +47,7 @@ class LidarPersonTracking(Node):
         self.kalman.measurementNoiseCov = np.eye(2, dtype=np.float32) * 0.1
         self.kalman.statePost = np.zeros((4, 1), dtype=np.float32)
 
+        # 칼만 필터 설정(속도)
         self.kalman_speed = cv2.KalmanFilter(2, 1)
         self.kalman_speed.transitionMatrix = np.array([[1, 1], [0, 1]], dtype=np.float32)
         self.kalman_speed.measurementMatrix = np.array([[1, 0]], dtype=np.float32)
@@ -78,6 +85,10 @@ class LidarPersonTracking(Node):
                 if len(self.position_history) >= 2:
                     delta_pos = self.position_history[-1] - self.position_history[-2]
                     self.velocity_vector = delta_pos / dt
+                    # 타겟 정지 여부 판단
+                    velocity_magnitude = np.linalg.norm(self.velocity_vector)
+                    self.target_stopped = velocity_magnitude < 0.05 #속도가 0.05미만이면 정지
+
             elif self.target_position is not None:
                 self.target_position = self.predict_with_vector(predicted_position)
         else:
@@ -90,12 +101,16 @@ class LidarPersonTracking(Node):
         self.marker_publisher.publish(cluster_markers)
 
     def predict_with_vector(self, predicted_position):
-        """벡터 계산으로 사각지대 위치 예측"""
+        """타겟 정지 시 마지막 위치 유지"""
         if self.velocity_vector is None or len(self.position_history) < 1:
             return predicted_position
 
         # 마지막 위치에서 속도 벡터로 예측
         last_pos = self.position_history[-1]
+        if self.target_stopped:
+            return last_pos #타겟이 정지하면 마지막 위치 유지
+
+
         dt = time.time() - self.last_seen_time + 1e-5
         predicted_pos = last_pos + self.velocity_vector * dt
 
@@ -121,6 +136,7 @@ class LidarPersonTracking(Node):
         if len(cluster_centers) < 2:
             return None
 
+        #다리 쌍 찾기
         min_leg_distance = 0.2
         max_leg_distance = 0.37
         best_pair = None
@@ -128,23 +144,39 @@ class LidarPersonTracking(Node):
 
         if self.target_position is not None:
             predicted_pos = self.target_position
-            for i in range(len(cluster_centers)):
-                for j in range(i + 1, len(cluster_centers)):
-                    dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
-                    if min_leg_distance < dist < max_leg_distance:
-                        pair_center = np.mean([cluster_centers[i], cluster_centers[j]], axis=0)
-                        pair_dist = np.linalg.norm(pair_center - predicted_pos)
-                        if pair_dist < min_distance and pair_dist < 0.8:
-                            min_distance = pair_dist
-                            best_pair = (cluster_centers[i], cluster_centers[j])
+            
+            #타겟이 정지한 경우 기존 위치 근처만 탐지
+            if self.target_stopped:
+                for i in range(len(cluster_centers)):
+                    for j in range(i + 1, len(cluster_centers)):
+                        dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
+                        if min_leg_distance < dist < max_leg_distance:
+                            pair_center = np.mean([cluster_centers[i], cluster_centers[j]], axis=0)
+                            pair_dist = np.linalg.norm(pair_center - predicted_pos)
+
+                            if pair_dist < 0.5:  #정지 시 0.5m이내에서만 탐지
+                                return pair_center
+                return None  #근처에 없으면 타겟 유지
+                                
+            else:
+                for i in range(len(cluster_centers)):
+                    for j in range(i + 1, len(cluster_centers)):
+                        dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
+                        if min_leg_distance < dist < max_leg_distance:
+                            pair_center = np.mean([cluster_center[i], cluster_center[j]], axis=0)
+                            pair_dist = np.linalg.norm(pair_center - predicted_pos)
+                            if pair_dist < min_distance and pair_dist < 0.8:
+                                min_distance = pair_dist
+                                best_pair = (cluster_centers[i], cluster_centers[j])
         else:
-            for i in range(len(cluster_centers)):
+             for i in range(len(cluster_centers)):
                 for j in range(i + 1, len(cluster_centers)):
                     dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
                     if min_leg_distance < dist < max_leg_distance and dist < min_distance:
                         min_distance = dist
                         best_pair = (cluster_centers[i], cluster_centers[j])
 
+                    
         return np.mean(best_pair, axis=0) if best_pair else None
 
     def is_valid_person(self, new_position, predicted_position):
@@ -162,9 +194,16 @@ class LidarPersonTracking(Node):
         dt = time.time() - self.last_seen_time + 1e-5
         new_velocity = np.linalg.norm(new_position - self.target_position) / dt
         velocity_diff = abs(new_velocity - self.prev_velocity)
-        if velocity_diff > 0.5 or new_velocity < 0.01:
-            return False
 
+        #타겟 정지 시 속도 조건 완화
+        if self.target_stopped:
+            if dist_to_predicted > 0.5:  #정지 시 0.5m 이상 벗어나면 유효하지 않음
+                return False
+        else:
+            if velocity_diff > 0.5 or new_velocity < 0.01:
+                return False
+  
+            
         if self.knn_fit:
             predicted_label = self.knn.predict([new_position])
             return predicted_label[0] == 0
@@ -206,9 +245,9 @@ class LidarPersonTracking(Node):
         filtered_speed = self.kalman_speed.predict()[0][0]
         angle_to_target = np.arctan2(target_y, target_x)
 
-        if distance < 0.3:
+        if distance < 0.3 or (self.target_stopped and distance < 0.5):  #정지 시 0.5m 이내에서 멈춤
             cmd.linear.x = 0.0
-            cmd.angular.z = 0.0
+            cmd.angular.z = 0.0  #회전 방지
         else:
             linear_speed = min(0.3, 0.17 * filtered_speed)
             angular_speed = -0.5 * angle_to_target
@@ -233,7 +272,7 @@ class LidarPersonTracking(Node):
             marker.scale.x = 0.3
             marker.scale.y = 0.3
             marker.scale.z = 0.3
-            marker.color.r, marker.color.g, marker.color.b = 0.0, 1.0, 0.0
+            marker.color.r, marker.color.g, marker.color.b = 0.0, 0.0, 1.0
             marker.color.a = 1.0
             marker_array.markers.append(marker)
         return marker_array
