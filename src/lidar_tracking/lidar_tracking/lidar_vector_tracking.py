@@ -15,12 +15,16 @@ class LidarPersonTracking(Node):
     def __init__(self):
         super().__init__('lidar_person_tracking')
         qos_profile = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
-
+        
+        #ROS2 퍼블리셔
         self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
         self.marker_publisher = self.create_publisher(MarkerArray, '/cluster_markers', 10)
+        
+        #LIDAR 센서 데이터 구독
         self.subscription = self.create_subscription(LaserScan, '/scan', self.lidar_callback, qos_profile)
         self.timer = self.create_timer(0.01, self.timer_callback)
 
+        # 초기화 변수
         self.target_position = None
         self.last_seen_time = time.time()
         self.prev_velocity = 0.0
@@ -35,6 +39,7 @@ class LidarPersonTracking(Node):
         self.knn = KNeighborsClassifier(n_neighbors=3)  #더 엄격한 분류를 위해 증가
         self.knn_fit = False
 
+        # 칼만 필터 설정 (위치)
         self.kalman = cv2.KalmanFilter(4, 2)
         self.kalman.transitionMatrix = np.array([[1, 0, 1, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]], dtype=np.float32)
         self.kalman.measurementMatrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.float32)
@@ -42,6 +47,7 @@ class LidarPersonTracking(Node):
         self.kalman.measurementNoiseCov = np.eye(2, dtype=np.float32) * 0.1
         self.kalman.statePost = np.zeros((4, 1), dtype=np.float32)
 
+        # 칼만 필터 설정(속도)
         self.kalman_speed = cv2.KalmanFilter(2, 1)
         self.kalman_speed.transitionMatrix = np.array([[1, 1], [0, 1]], dtype=np.float32)
         self.kalman_speed.measurementMatrix = np.array([[1, 0]], dtype=np.float32)
@@ -130,7 +136,7 @@ class LidarPersonTracking(Node):
         if len(cluster_centers) < 2:
             return None
 
-        #다리 쌍 
+        #다리 쌍 찾기
         min_leg_distance = 0.2
         max_leg_distance = 0.37
         best_pair = None
@@ -138,6 +144,7 @@ class LidarPersonTracking(Node):
 
         if self.target_position is not None:
             predicted_pos = self.target_position
+            
             #타겟이 정지한 경우 기존 위치 근처만 탐지
             if self.target_stopped:
                 for i in range(len(cluster_centers)):

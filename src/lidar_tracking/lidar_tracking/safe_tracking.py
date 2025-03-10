@@ -4,6 +4,12 @@
 # 충돌 회피 : 장애물이 있을 경우 속도를 줄이거나 우회 경로를 계산
 # 재추적 로직 : 타겟 재식별 시 예측 위치와 속도 일관성 확인
 
+#추가
+#타겟 식별 강화: 기존 타겟의 위치 이력(position_history)과 속도 이력(velocity_history)을 활용해 더 엄격한 타겟 재식별 기준 적용
+#KNN 모델 개선 : 기존 타겟의 특징을 더 잘 학습하도록 초기 타겟 데이터 고정, 새로운 데이터를 추가 학습하지 않도록 조정
+# 재추적 로직 추가 : 장애물로 인해 타겟이 가려진 후, 칼만 필터 예측 위치와 이력을 기반으로 기존 타겟을 우선적으로 재식별하도록 함.
+
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
@@ -39,12 +45,13 @@ class LidarPersonTracking(Node):
         self.last_velocity_z = 0.0
         self.velocity_smoothing_factor = 0.5
         self.positions = []
-        self.position_history = deque(maxlen=10)  
-        self.velocity_history = deque(maxlen=10)
+        self.position_history = deque(maxlen=10)  #타겟 위치 이력
+        self.velocity_history = deque(maxlen=10) #타겟 속도 이력
         self.obstacle_detected = False
         self.min_safe_distance = 0.5  # 안전 거리 설정 (m)
         self.closest_obstacle_distance = float('inf')
         self.target_stopped = False  # 타겟 정지 여부
+        self.initial_target_set = False  #초기 타겟 설정 여부
 
         self.knn = KNeighborsClassifier(n_neighbors=1)
         self.knn_fit = False
@@ -96,6 +103,7 @@ class LidarPersonTracking(Node):
                 self.position_history.append(self.target_position)
                 velocity = np.linalg.norm(self.target_position - (self.position_history[-2] if len(self.position_history) > 1 else self.target_position)) / dt
                 self.velocity_history.append(velocity)
+
                 #타겟 정지 여부 확인
                 self.target_stopped = velocity < 0.05  #속도가 0.5m/s 미만이면 정지로 간주
             elif self.target_position is not None:
@@ -111,14 +119,28 @@ class LidarPersonTracking(Node):
         self.marker_publisher.publish(cluster_markers)
 
     def detect_obstacle(self, points):
-        """로봇과 타겟 사이에 장애물이 있는지 확인"""
+        """로봇과 타겟 사이에 부채꼴 영역 내 장애물이 있는지 확인"""
 
         self.closest_obstacle_distance = float('inf')
         self.obstacle_detected = False
 
+        if self.target_position is None:
+            return
+        
+        target_x, target_y = self.target_position
+        angle_to_target = np.arctan2(target_y, target_x)
+        target_distance = np.linalg.norm(self.target_position)
+        angle_range = np.deg2rad(30)  #플마 30도 부채꼴 범위
+
+
         for point in points:
             dist_to_robot = np.linalg.norm(point)
-            if dist_to_robot < self.min_safe_distance:
+            point_angle = np.arctan2(point[1], point[0])
+            angle_diff = np.abs(np.arctan2(np.sin(point_angle - angle_to_target),
+                                           np.cos(point_angle - angle_to_target)))
+            if (dist_to_robot < self.min_safe_distance and
+                angle_diff <= angle_range and
+                dist_to_robot < target_distance):
                 self.obstacle_detected = True
                 self.closest_obstacle_distance = min(self.closest_obstacle_distance, dist_to_robot)
           
@@ -170,16 +192,34 @@ class LidarPersonTracking(Node):
 
         if self.target_position is not None:
             predicted_pos = self.target_position
+            #이력 기반 방향 예측
+            if len(self.position_history) >= 2:
+                last_pos = self.position_history[-1]
+                prev_pos = self.position_history[-2]
+                direction = last_pos - prev_pos
+                direction_norm = np.linalg.norm(direction)
+                if direction_norm > 0:
+                    direction /= direction_norm
+            else:
+                direction = np.array([0.0, 0.0])
+
+
             for i in range(len(cluster_centers)):
                 for j in range(i + 1, len(cluster_centers)):
                     dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
                     if min_leg_distance < dist < max_leg_distance:
                         pair_center = np.mean([cluster_centers[i], cluster_centers[j]], axis=0)
                         pair_dist = np.linalg.norm(pair_center - predicted_pos)
-                        if pair_dist < min_distance and pair_dist < 0.8:
+                        # 방향 일관성 확인
+                        pair_direction = pair_center - predicted_pos
+                        direction_similarity = np.dot(pair_direction, direction) / (np.linalg.norm(pair_direction) * np.linalg.norm(direction) + 1e-5)
+                        
+                        if (pair_dist < min_distance and pair_dist < 0.8 and
+                            (direction_similarity > 0.5 or pair_dist < 0.3)):  #방향 유사성 또는 근접성 기준(similarity 값 0.3 ~ 0.7 테스트하며 조정)
                             min_distance = pair_dist
                             best_pair = (cluster_centers[i], cluster_centers[j])
         else:
+            # 초기 타겟 설정
             for i in range(len(cluster_centers)):
                 for j in range(i + 1, len(cluster_centers)):
                     dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
@@ -195,6 +235,10 @@ class LidarPersonTracking(Node):
 
         if self.target_position is None:
             self.positions.append(new_position)
+            if len(self.positions) >= 5 and not self.initial_target_set:
+                self.knn.fit(self.positions, [0] * len(self.positions))
+                self.knn_fit = True
+                self.initial_target_set = True
             return True
 
         dist_to_predicted = np.linalg.norm(new_position - predicted_position)
@@ -210,18 +254,15 @@ class LidarPersonTracking(Node):
             if velocity_diff > 0.1 or new_velocity > 0.1: #정지 상태에서 큰 변화가 있으면 유효하지 않음
                 return False
         else:
-            if velocity_diff > 0.5 or new_velocity < 0.01: return False
+            if velocity_diff > 0.5: #속도 차이만 확인, 작은 속도는 허용
+                return False
             
             
-        
         if self.knn_fit:
             predicted_label = self.knn.predict([new_position])
             return predicted_label[0] == 0
 
-        self.positions.append(new_position)
-        if len(self.positions) >= 5:
-            self.knn.fit(self.positions, [0] * len(self.positions))
-            self.knn_fit = True
+        #초기 타겟이 설정된 후에는 새로운 데이터를 추가 학습하지 않음
         self.prev_velocity = new_velocity
         return True
 
@@ -229,6 +270,8 @@ class LidarPersonTracking(Node):
         if measurement is None:
             return
         measured = np.array([[np.float32(measurement[0])], [np.float32(measurement[1])]])
+        if self.target_position is None: #초기화
+            self.kalman.statePost[:2] = measured
         self.kalman.correct(measured)
 
     def get_kalman_prediction(self):
@@ -279,24 +322,8 @@ class LidarPersonTracking(Node):
             self.last_velocity_z = cmd.angular.z
 
         self.cmd_vel_publisher.publish(cmd)
-
-        # if self.obstacle_detected:
-        #     # 장애물 감지 시 속도 줄임
-        #     cmd.linear.x = 0.05  # 최소 속도로 이동
-        #     cmd.angular.z = 0.0
-        # elif distance < 0.3:
-        #     cmd.linear.x = 0.0
-        #     cmd.angular.z = 0.0
-        # else:
-        #     linear_speed = min(0.3, 0.17 * filtered_speed)
-        #     angular_speed = -0.5 * angle_to_target
-        #     smoothed_linear_speed = self.velocity_smoothing_factor * linear_speed + (1 - self.velocity_smoothing_factor) * self.last_velocity_x
-        #     cmd.linear.x = float(smoothed_linear_speed)
-        #     smoothed_angular_speed = self.velocity_smoothing_factor * angular_speed + (1 - self.velocity_smoothing_factor) * self.last_velocity_z
-        #     cmd.angular.z = float(smoothed_angular_speed)
-        #     self.last_velocity_x = cmd.linear.x
-        #     self.last_velocity_z = cmd.angular.z
-        # self.cmd_vel_publisher.publish(cmd)
+        #이전 코드의 단순 속도 제어 로직은 제거됨(속도 스케일링 및 우회 로직으로 대체)
+      
 
     def create_cluster_markers(self, person_position):
         marker_array = MarkerArray()
@@ -311,7 +338,7 @@ class LidarPersonTracking(Node):
             marker.scale.x = 0.3
             marker.scale.y = 0.3
             marker.scale.z = 0.3
-            marker.color.r, marker.color.g, marker.color.b = 0.0, 1.0, 0.0
+            marker.color.r, marker.color.g, marker.color.b = 0.0, 0.0, 1.0
             marker.color.a = 1.0
             marker_array.markers.append(marker)
         return marker_array
