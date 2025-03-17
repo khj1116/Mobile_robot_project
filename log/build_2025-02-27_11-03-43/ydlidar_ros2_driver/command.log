@@ -1,4 +1,0 @@
-Invoking command in '/home/addinedu/ros2_ws/build/ydlidar_ros2_driver': /usr/bin/cmake --build /home/addinedu/ros2_ws/build/ydlidar_ros2_driver -- -j16 -l16
-Invoked command in '/home/addinedu/ros2_ws/build/ydlidar_ros2_driver' returned '0': /usr/bin/cmake --build /home/addinedu/ros2_ws/build/ydlidar_ros2_driver -- -j16 -l16
-Invoking command in '/home/addinedu/ros2_ws/build/ydlidar_ros2_driver': /usr/bin/cmake --install /home/addinedu/ros2_ws/build/ydlidar_ros2_driver
-Invoked command in '/home/addinedu/ros2_ws/build/ydlidar_ros2_driver' returned '0': /usr/bin/cmake --install /home/addinedu/ros2_ws/build/ydlidar_ros2_driver

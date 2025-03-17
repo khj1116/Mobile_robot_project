@@ -20,6 +20,8 @@ import cv2
 import time
 from collections import deque
 
+
+
 class LidarPersonTracking(Node):
     def __init__(self):
         super().__init__('lidar_person_tracking')

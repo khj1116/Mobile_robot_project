@@ -10,12 +10,15 @@ setup.py
 ../../build/lidar_tracking/lidar_tracking.egg-info/zip-safe
 lidar_tracking/__init__.py
 lidar_tracking/cluster_test.py
+lidar_tracking/final_code.py
+lidar_tracking/final_tracking.py
 lidar_tracking/following_test.py
 lidar_tracking/lidar_clustering.py
 lidar_tracking/lidar_distance.py
 lidar_tracking/lidar_following.py
 lidar_tracking/lidar_tracking.py
 lidar_tracking/lidar_visualization.py
+lidar_tracking/safe_tracking.py
 lidar_tracking/utils.py
 resource/lidar_tracking
 test/test_copyright.py

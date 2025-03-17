@@ -1,0 +1,34 @@
+[0.730s] Invoking command in '/home/addinedu/ros2_ws/src/lidar_tracking': PYTHONPATH=/home/addinedu/ros2_ws/build/lidar_tracking/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lidar_tracking build --build-base /home/addinedu/ros2_ws/build/lidar_tracking/build install --record /home/addinedu/ros2_ws/build/lidar_tracking/install.log --single-version-externally-managed install_data
+[0.929s] running egg_info
+[0.929s] writing ../../build/lidar_tracking/lidar_tracking.egg-info/PKG-INFO
+[0.929s] writing dependency_links to ../../build/lidar_tracking/lidar_tracking.egg-info/dependency_links.txt
+[0.930s] writing entry points to ../../build/lidar_tracking/lidar_tracking.egg-info/entry_points.txt
+[0.930s] writing requirements to ../../build/lidar_tracking/lidar_tracking.egg-info/requires.txt
+[0.930s] writing top-level names to ../../build/lidar_tracking/lidar_tracking.egg-info/top_level.txt
+[0.931s] reading manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[0.932s] writing manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[0.932s] running build
+[0.932s] running build_py
+[0.932s] copying lidar_tracking/final_tracking.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.933s] running install
+[0.933s] running install_lib
+[0.933s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/final_tracking.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.934s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/final_tracking.py to final_tracking.cpython-310.pyc
+[0.937s] running install_data
+[0.937s] running install_egg_info
+[0.938s] removing '/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking-0.0.0-py3.10.egg-info' (and everything under it)
+[0.938s] Copying ../../build/lidar_tracking/lidar_tracking.egg-info to /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking-0.0.0-py3.10.egg-info
+[0.939s] running install_scripts
+[0.954s] Installing cluster_test script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing final_code script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing final_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing following_test script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing lidar_clustering script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing lidar_distance script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing lidar_following script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing lidar_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing lidar_visualization script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing safe_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.955s] Installing utils script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.956s] writing list of installed files to '/home/addinedu/ros2_ws/build/lidar_tracking/install.log'
+[0.979s] Invoked command in '/home/addinedu/ros2_ws/src/lidar_tracking' returned '0': PYTHONPATH=/home/addinedu/ros2_ws/build/lidar_tracking/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lidar_tracking build --build-base /home/addinedu/ros2_ws/build/lidar_tracking/build install --record /home/addinedu/ros2_ws/build/lidar_tracking/install.log --single-version-externally-managed install_data

@@ -1,0 +1,33 @@
+[0.488s] Invoking command in '/home/addinedu/ros2_ws/build/ydlidar_ros2_driver': /usr/bin/cmake /home/addinedu/ros2_ws/src/ydlidar_ros2_driver -DCMAKE_INSTALL_PREFIX=/home/addinedu/ros2_ws/install/ydlidar_ros2_driver
+[0.645s] -- The C compiler identification is GNU 11.4.0
+[0.777s] -- The CXX compiler identification is GNU 11.4.0
+[0.786s] -- Detecting C compiler ABI info
+[0.851s] -- Detecting C compiler ABI info - done
+[0.856s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.857s] -- Detecting C compile features
+[0.857s] -- Detecting C compile features - done
+[0.860s] -- Detecting CXX compiler ABI info
+[0.936s] -- Detecting CXX compiler ABI info - done
+[0.942s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.942s] -- Detecting CXX compile features
+[0.942s] -- Detecting CXX compile features - done
+[0.953s] [31mCMake Error at CMakeLists.txt:15 (find_package):
+[0.953s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[0.954s]   has asked CMake to find a package configuration file provided by
+[0.954s]   "ament_cmake", but CMake did not find one.
+[0.954s] 
+[0.954s]   Could not find a package configuration file provided by "ament_cmake" with
+[0.954s]   any of the following names:
+[0.954s] 
+[0.954s]     ament_cmakeConfig.cmake
+[0.954s]     ament_cmake-config.cmake
+[0.954s] 
+[0.954s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[0.954s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[0.954s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[0.954s]   has been installed.
+[0.954s] 
+[0.954s] [0m
+[0.954s] -- Configuring incomplete, errors occurred!
+[0.954s] See also "/home/addinedu/ros2_ws/build/ydlidar_ros2_driver/CMakeFiles/CMakeOutput.log".
+[0.962s] Invoked command in '/home/addinedu/ros2_ws/build/ydlidar_ros2_driver' returned '1': /usr/bin/cmake /home/addinedu/ros2_ws/src/ydlidar_ros2_driver -DCMAKE_INSTALL_PREFIX=/home/addinedu/ros2_ws/install/ydlidar_ros2_driver

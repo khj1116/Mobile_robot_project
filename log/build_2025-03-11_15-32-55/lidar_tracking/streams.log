@@ -1,0 +1,73 @@
+[0.754s] Invoking command in '/home/addinedu/ros2_ws/src/lidar_tracking': PYTHONPATH=/home/addinedu/ros2_ws/build/lidar_tracking/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lidar_tracking build --build-base /home/addinedu/ros2_ws/build/lidar_tracking/build install --record /home/addinedu/ros2_ws/build/lidar_tracking/install.log --single-version-externally-managed install_data
+[0.912s] running egg_info
+[0.913s] creating ../../build/lidar_tracking/lidar_tracking.egg-info
+[0.913s] writing ../../build/lidar_tracking/lidar_tracking.egg-info/PKG-INFO
+[0.913s] writing dependency_links to ../../build/lidar_tracking/lidar_tracking.egg-info/dependency_links.txt
+[0.913s] writing entry points to ../../build/lidar_tracking/lidar_tracking.egg-info/entry_points.txt
+[0.913s] writing requirements to ../../build/lidar_tracking/lidar_tracking.egg-info/requires.txt
+[0.913s] writing top-level names to ../../build/lidar_tracking/lidar_tracking.egg-info/top_level.txt
+[0.914s] writing manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[0.915s] reading manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[0.915s] writing manifest file '../../build/lidar_tracking/lidar_tracking.egg-info/SOURCES.txt'
+[0.915s] running build
+[0.915s] running build_py
+[0.915s] creating /home/addinedu/ros2_ws/build/lidar_tracking/build
+[0.915s] creating /home/addinedu/ros2_ws/build/lidar_tracking/build/lib
+[0.915s] creating /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.915s] copying lidar_tracking/cluster_test.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.915s] copying lidar_tracking/lidar_distance.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/lidar_following.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/utils.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/lidar_clustering.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/safe_tracking.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/lidar_vector_tracking.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/__init__.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/lidar_visualization.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/following_test.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] copying lidar_tracking/lidar_tracking.py -> /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking
+[0.916s] running install
+[0.917s] running install_lib
+[0.917s] creating /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/cluster_test.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_distance.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_following.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/utils.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_clustering.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/safe_tracking.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.917s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_vector_tracking.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.918s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/__init__.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.918s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_visualization.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.918s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/following_test.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.918s] copying /home/addinedu/ros2_ws/build/lidar_tracking/build/lib/lidar_tracking/lidar_tracking.py -> /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking
+[0.918s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/cluster_test.py to cluster_test.cpython-310.pyc
+[0.918s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_distance.py to lidar_distance.cpython-310.pyc
+[0.919s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_following.py to lidar_following.cpython-310.pyc
+[0.920s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/utils.py to utils.cpython-310.pyc
+[0.920s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_clustering.py to lidar_clustering.cpython-310.pyc
+[0.921s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/safe_tracking.py to safe_tracking.cpython-310.pyc
+[0.923s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_vector_tracking.py to lidar_vector_tracking.cpython-310.pyc
+[0.924s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/__init__.py to __init__.cpython-310.pyc
+[0.924s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_visualization.py to lidar_visualization.cpython-310.pyc
+[0.925s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/following_test.py to following_test.cpython-310.pyc
+[0.926s] byte-compiling /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking/lidar_tracking.py to lidar_tracking.cpython-310.pyc
+[0.927s] running install_data
+[0.927s] creating /home/addinedu/ros2_ws/install/lidar_tracking/share/ament_index
+[0.927s] creating /home/addinedu/ros2_ws/install/lidar_tracking/share/ament_index/resource_index
+[0.928s] creating /home/addinedu/ros2_ws/install/lidar_tracking/share/ament_index/resource_index/packages
+[0.928s] copying resource/lidar_tracking -> /home/addinedu/ros2_ws/install/lidar_tracking/share/ament_index/resource_index/packages
+[0.928s] copying package.xml -> /home/addinedu/ros2_ws/install/lidar_tracking/share/lidar_tracking
+[0.928s] running install_egg_info
+[0.929s] Copying ../../build/lidar_tracking/lidar_tracking.egg-info to /home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages/lidar_tracking-0.0.0-py3.10.egg-info
+[0.929s] running install_scripts
+[0.944s] Installing cluster_test script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.944s] Installing following_test script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.944s] Installing lidar_clustering script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.944s] Installing lidar_distance script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.944s] Installing lidar_following script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.944s] Installing lidar_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.945s] Installing lidar_vector_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.945s] Installing lidar_visualization script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.945s] Installing safe_tracking script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.945s] Installing utils script to /home/addinedu/ros2_ws/install/lidar_tracking/lib/lidar_tracking
+[0.945s] writing list of installed files to '/home/addinedu/ros2_ws/build/lidar_tracking/install.log'
+[0.965s] Invoked command in '/home/addinedu/ros2_ws/src/lidar_tracking' returned '0': PYTHONPATH=/home/addinedu/ros2_ws/build/lidar_tracking/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/lidar_tracking/lib/python3.10/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lidar_tracking build --build-base /home/addinedu/ros2_ws/build/lidar_tracking/build install --record /home/addinedu/ros2_ws/build/lidar_tracking/install.log --single-version-externally-managed install_data

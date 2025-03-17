@@ -1,0 +1,22 @@
+[0.755s] Invoking command in '/home/addinedu/ros2_ws/src/my_first_package': PYTHONPATH=/home/addinedu/ros2_ws/build/my_first_package/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/my_first_package/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/my_first_package build --build-base /home/addinedu/ros2_ws/build/my_first_package/build install --record /home/addinedu/ros2_ws/build/my_first_package/install.log --single-version-externally-managed install_data
+[0.944s] running egg_info
+[0.944s] writing ../../build/my_first_package/my_first_package.egg-info/PKG-INFO
+[0.945s] writing dependency_links to ../../build/my_first_package/my_first_package.egg-info/dependency_links.txt
+[0.945s] writing entry points to ../../build/my_first_package/my_first_package.egg-info/entry_points.txt
+[0.945s] writing requirements to ../../build/my_first_package/my_first_package.egg-info/requires.txt
+[0.945s] writing top-level names to ../../build/my_first_package/my_first_package.egg-info/top_level.txt
+[0.946s] reading manifest file '../../build/my_first_package/my_first_package.egg-info/SOURCES.txt'
+[0.946s] adding license file 'LICENSE'
+[0.946s] writing manifest file '../../build/my_first_package/my_first_package.egg-info/SOURCES.txt'
+[0.947s] running build
+[0.947s] running build_py
+[0.947s] running install
+[0.947s] running install_lib
+[0.948s] running install_data
+[0.948s] running install_egg_info
+[0.949s] removing '/home/addinedu/ros2_ws/install/my_first_package/lib/python3.10/site-packages/my_first_package-0.0.0-py3.10.egg-info' (and everything under it)
+[0.949s] Copying ../../build/my_first_package/my_first_package.egg-info to /home/addinedu/ros2_ws/install/my_first_package/lib/python3.10/site-packages/my_first_package-0.0.0-py3.10.egg-info
+[0.950s] running install_scripts
+[0.965s] Installing my_first_node script to /home/addinedu/ros2_ws/install/my_first_package/lib/my_first_package
+[0.965s] writing list of installed files to '/home/addinedu/ros2_ws/build/my_first_package/install.log'
+[0.985s] Invoked command in '/home/addinedu/ros2_ws/src/my_first_package' returned '0': PYTHONPATH=/home/addinedu/ros2_ws/build/my_first_package/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/addinedu/ros2_ws/install/my_first_package/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/my_first_package build --build-base /home/addinedu/ros2_ws/build/my_first_package/build install --record /home/addinedu/ros2_ws/build/my_first_package/install.log --single-version-externally-managed install_data
