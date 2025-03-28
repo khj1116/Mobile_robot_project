@@ -61,34 +61,39 @@
   + 다른 사람 난입 시 정지하는 안전진단 기능 완성
 
 
++ DBSCAN 다리 쌍 감지
+
+
+
+
++ 유클리드 거리 이용한 일정 간격 주행
+
+
+
+
+
 + 사람 다리 감지(반원 형태)
 
 
-![Image](https://github.com/user-attachments/assets/6425bd51-bd0d-420b-b912-07c3d897a0d4)
+![Image](https://github.com/user-attachments/assets/9de07419-af2f-48b7-96fa-dcd39ee8ab38)
+
+
+
 
 
 + 
 
 
-![Image](https://github.com/user-attachments/assets/ba3b9ccc-ad7e-40a2-819c-87a3030cdf9b)
-+ 매장 주문 페이지 주문 및 실시간 주문 내역 페이지 연동(매장 빌지 역할)
 
 
-![Image](https://github.com/user-attachments/assets/36bb9609-c7be-4d89-b90c-352103ce6fec)
 
 
-+ 영어 지원을 통한 사용자 경험 제공
 
 
-![Image](https://github.com/user-attachments/assets/21be9ee2-b53f-4bad-aef0-fc5f4f45b9ce)
-+ 포장 주문 페이지 주문 및 실시간 주문 내역 페이지 연동
 
 
-https://github.com/user-attachments/assets/e7b77822-29d7-4137-9442-1265355ab86d
 
-+ 포장 주문 후 아이스크림 제조
 
-https://github.com/user-attachments/assets/3fba2deb-5ba2-4692-ad41-b80691cccf38
 ---
 ## Improvements
 + FRONT_END
