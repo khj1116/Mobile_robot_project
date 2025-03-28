@@ -95,6 +95,14 @@
 
 
 
++ 안전진단
+
+![Image](https://github.com/user-attachments/assets/6b04b1ee-845f-486b-ae55-a2d85c53466d)
+
+
+
+
+
 
 ---
 ## Improvements
