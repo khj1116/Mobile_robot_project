@@ -27,34 +27,47 @@
   + Python
   + Opencv
   + Scikit-learn library
++ Voice chat
+  + chat GPT, Clova API
+  + picovoice porcupine
 ---
 ## System Architecture
-### ![Image](https://github.com/user-attachments/assets/a802b279-f6e9-47c4-b387-2384f48a1b0e)
-+ 매장이나 원격 주문 페이지에서 주문 시 주문 데이터가 로봇 팔 제어 코드로 송신됨
-+ 포장 주문의 경우 Easy OCR로 Pick Up Zone의 Text를 인식하여 적재할 위치 좌표값 장소에 제조한 아이스크림을 플레이팅
-+ 제조 과정 중 손이 난입할 시 yolov8로 Object Detecting 작업한 안전진단 기능이 구동되며 로봇 팔 정지
-+ 로봇팔 동작 순서를 수정하여 제조 순서를 주문 시 선택 가능하도록 함(토핑 먼저 혹은 아이스크림 먼저) (xArm-Python-SDK 코드 수정)
-+ 회원 주문 시 최근 주문한 3개의 메뉴를 추천메뉴로 창을 띄우는 추천 메뉴 기능을 추가(DB 주문 내역 테이블에서 조회)
+### ![Image](https://github.com/user-attachments/assets/262f5f14-6bca-47e4-8d1d-fe531cd4f9ae)
++ 기능은 크게 의료진 회진, 수시 회진, 호출 3가지로 분류
++ 의료진 회진 : 2D lidar 만을 사용하여 사람의 다리 쌍 감지하여 의료진을 트래킹하며 회진을 보조하는 기능 수행
++ Voice chat 기능을 활용하여 트래킹을 시작 및 종료 할 수 있음
++ 수시 회진 :  병실의 환자를 Detection 후 자율 주행 수행. IR 센서로 환자의 체온을 파악하며 환자의 상태 파악
++ 병실 침대의 QR를 스캔하여 환자 스케줄 관리 및 Voice chat으로 환자에게 알림 서비스 제공
++ 호출 : 병실의 QR 스캔을 통해 해당 위치로 로봇 호출이 가능하여 여러가지 서비스를 요청할 수 있음
++ DB & Web의 경우 환자 관련 데이터(체온, 스케줄, 개인정보, 질병 관련 데이터)와 비품 데이터가 저장되며
++ 웹 인터페이스로 사용자가 간편하게 DB 내용이 수정 가능하게 함
++ WebSocket 활용하여 실시간 데이터 업데이트
++ 실제 의료기록데이터보관기간(10년)을 넘기면 자동으로 데이터가 삭제되는 기능 구현현
 ---
 ## Results
-+ FRONT_END
-  + 다양한 인증 옵션 제공(ID/PW,FACE-ID)
-  + 접근성 강화 : 다국어, 큰 글씨 모드, 다중 페이지 구현(매장/포장/회원/비회원)
++ 로봇 호출
+  + QR Scan과 ROS 통신을 원활히 연결하여 정확한 waypoint로의 주행 완성
+  + NLP, STT, TTS를 활용하여 간단한 질의 응답, 음성으로 환자와 상호 작용이 가능하게 끔 구현함
   + 시각적 효과 : 물결 애니메이션으로 사용자 경험 개선
   + 병원 회진 로봇 "HOSPY" 의료진 회진 시 사용된 2D LIDAR TRACKING
-+ BACK_END
-  + 실시간 주문 관리 : ROS2 및 Socket I.O로 로봇팔과 클라이언트 동기화
-  + 사용자 인증 : 다양한 로그인 옵션과 보안 강화(비밀번호 해싱, 세션)
-  + 주문 동기화 : 포장 주문 서버와 메인 서버 간 데이터 통합
- 
++ 수시 회진 
+  + TTS를 활용하여 환자와의 상호작용 기능 완성
+  + Object Detection으로 환자 유무 파악 및 IR 센서로 환자 체온 체크 기능 구현
+  + QR SCAN을 통한 스케줄 관리 및 DB DATA 대조 기능 구현
++ 의료진 회진
+  + WakeWord, STT, TTS를 이용한 Tracking 활성화 기능 구현
+  + 사람과 일정 간격을 두고 Tracking 수행
+  + 추종 객체와 거리가 멀어지면 속도를 빠르게 가까우면 속도를 느리게 구현
+  + 다른 사람 난입 시 정지하는 안전진단 기능 완성
 
-+ FACE ID 주문
+
++ 사람 다리 감지(반원 형태)
 
 
 ![Image](https://github.com/user-attachments/assets/6425bd51-bd0d-420b-b912-07c3d897a0d4)
 
 
-+ 큰 글씨모드 제공을 통한 사용자 경험 제공
++ 
 
 
 ![Image](https://github.com/user-attachments/assets/ba3b9ccc-ad7e-40a2-819c-87a3030cdf9b)
