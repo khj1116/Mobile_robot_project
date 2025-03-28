@@ -11,22 +11,27 @@
 + Integration
   + ROS2
   + Node.js
+    
 + Navigation
   + Nav2
   + ROS2
+    
 + DB & Web
   + MySQL
   + HTML5
   + CSS3
   + Node.js(Express)
+    
 + Object Detection
   + Pytorch
   + Opencv
   + YOLOv8
+    
 + Human Tracking(My role)
   + Python
   + Opencv
   + Scikit-learn library
+    
 + Voice chat
   + chat GPT, Clova API
   + picovoice porcupine
@@ -62,19 +67,26 @@
 
 
 + DBSCAN 다리 쌍 감지
+  + 라이다 데이터를 기반으로 접군(Points)을 클러스터링하여 다리 쌍 식별
+  + 노이즈 제거 및 다리 크기(0.05m ~ 0.15m)와 점 개수(5 ~ 15개)로 장애물 필터링
 
 ![Image](https://github.com/user-attachments/assets/f70bc9f9-ae2a-4732-8e86-57be7f170a79)
 
 
 
 + 유클리드 거리 이용한 일정 간격 주행
+  + 로봇과 목표 사이의 유클리드 거리 계산.
+  + 거리와 안전 거리 차이를 기반으로 속도를 비례적으로 조정함
+  + 유클리드 거리는 로봇과 사람 간 직선 거리를 나타내며, 선속도(linear.x)를 비례적으로 조정함
+  + 거리가 멀수록 속도가 증가하고(최대 0.6m/s), 가까워질수록 속도가 감소하며(최소 0.05m/s),
+  + 안전 거리(0.44m) 이내에서는 정지함
 
 
 ![Image](https://github.com/user-attachments/assets/3e850348-ae65-487c-89fd-9c33247cf714)
 
 
 
-+ 사람 다리 감지(반원 형태)
++ 사람 다리 감지(반원 형태) + 다리 쌍 중심 Marker 표시시
 
 
 ![Image](https://github.com/user-attachments/assets/9de07419-af2f-48b7-96fa-dcd39ee8ab38)
@@ -97,21 +109,17 @@
 
 
 + 안전진단
+  + LiDAR 데이터에서 난입자 감지 및 기존 추종 대상 복원
+  + 각도 범위(45도 ~ 135도) 내 점 분석, 35cm 이내 점 감지 시 난입자로 간주
+  + 난입자 제거 후 기존 추종 대상 복원 로직 포함
 
 ![Image](https://github.com/user-attachments/assets/6b04b1ee-845f-486b-ae55-a2d85c53466d)
 
 ---
 ## Improvements
-+ FRONT_END
-  + 다국어 지원 : 추가 언어 확장 검토
-  + 보안 : HTTPS 적용 및 입력값 검증 강화 필요
-+ BACK_END
-  + 얼굴 인식 : Python 스크립트 실행 속도 및 안정성 개선 필요
-  + 보안 : HTTPS 적용, SQL 인젝션 방지 강화
-  + 성능 : 대용량 주문 데이터 처리 시 DB 성능 최적화 필요
-  + ROS2 : 에러 처리 및 재연결 로직 추가 검토
-+ FACE-ID
-  + 웹캠 품질 및 조명 조건에 따른 인식률 개선
-  + DeepFace 모델 성능 최적화(GPU 메모리 사용량, 임계값 조정)
++ Human Tracking
+  + Moving Obstacle Avoidance Path-Planning :  난입자나 움직이는 객체를 인식하고 스스로 회피 경로를 생성하여 기존 추종 객체를 찾아내는 알고리즘 개선
+  + 의료진 Detection : Tracking 시작 시 다른 사람이 아닌 의료진을 구분하여 감지 후 트래킹(ex. 의료진 카드 인식 or QR 인식 기능)
+  
 
 
